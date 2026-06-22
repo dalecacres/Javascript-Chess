@@ -6,7 +6,6 @@ let div;
 let whiteTurn;
 let whiteCheck;
 let blackCheck;
-let standardBoard = [];
 let pieces = [];
 let enPassant = {x: undefined, y: undefined, color: undefined};
 
@@ -69,26 +68,34 @@ const BEHAVIOR = {
     "P": PAWN
 };
 
-/*
-creates 8 arrays each containing 8 arrays that will be used to store and access piece location and color on the chess standardBoard
-also styles each div element of the chess standardBoard on the html page with the "pieces.png" sprite centred on a blank area
-*/
-for (let a = 0; a < 9; a += 1) {
-    standardBoard[a] = [];
-}
+
+let standardBoard = Array.from(
+    {length: 9}, 
+    (_, i) => Array.from(
+        {length: 9}, 
+        (_, j) => {return {"id": convertY[j] + i, "piece": 0} }
+//      (_, j) => { return { coordinates: new Vector(i, j) } }
+    )
+);
 
 for (let x = 1; x < 9; x += 1) {
     for (let y = 1; y < 9; y += 1) {
-        standardBoard[x][y] = {"id": convertY[y] + x, "piece": 0};
         div = d.createElement("DIV");
         div.setAttribute("class", "square");
-        d.getElementById(standardBoard[x][y].id).style.backgroundImage = "url('../sprites/pieces.png')";
+        d.getElementById(standardBoard[x][y].id).style.backgroundImage = "url('./sprites/pieces.png')";
         d.getElementById(standardBoard[x][y].id).style.backgroundPosition = "0 -200";
     }
 }
 
 function switchColor(color) {
-    return (color === WHITE) ? BLACK : ((color === BLACK) ? WHITE : -1);
+    if (color == WHITE) {
+        return BLACK;
+    }
+    else if (color == BLACK) {
+        return WHITE
+    } else {
+        return -1;
+    }
 }
 
 function coordinates(x, y) {
@@ -98,21 +105,6 @@ function coordinates(x, y) {
     return {"x": x, "y": y};
 }
 
-function copyBoard(board) {
-    let testBoard = [];
-    for (let a = 0; a < board.length; a += 1) {
-        testBoard.push([]);
-        if (a !== 0) {
-            for (let b = 1; b < board[a].length; b += 1) {
-                testBoard[a][b] = {};
-                testBoard[a][b].id = board[a][b].id;
-                testBoard[a][b].piece = board[a][b].piece;
-            }
-        }
-    }
-
-    return testBoard;
-}
 
 //returns the legal path for a given piece on a given board
 function findPath(x, y, board, logMoves) {
@@ -276,6 +268,7 @@ function clicked(convertedY, x) {
 		whiteTurn = !whiteTurn;
 		clearHighlight();
 		currentPath = "";
+        }
     } else {
         color = standardBoard[x][y].piece.color;
         if (color === (whiteTurn ? WHITE : BLACK)) {
@@ -296,15 +289,8 @@ function clicked(convertedY, x) {
 	return;
 }
 
-function newBoard(board) {
-    let testBoard = [];
-    for (let i = 1; i < (board.length - 1); i += 1) {
-        testBoard.push([]);
-        for (let j = 1; j < (board[i].length - 1); j += 1) {
-            testBoard[i][j] = board[i][j];
-        }
-    }
-    return testBoard;
+Array.prototype.clone = function() {
+    return this.slice(0, this.length);
 }
 
 //could be a new program
@@ -339,4 +325,15 @@ function newGame() {
     }
 }
 
+class Vector {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    plus(modifier) {
+        this.x += modifier;
+        this.y += modifier;
+    } 
+}
 newGame();

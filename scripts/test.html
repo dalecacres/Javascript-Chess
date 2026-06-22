@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <title>test</title>
+    </head>
+    <body>
+        <script>
+            const PIECE_KEY = {
+                "P": "PAWN",
+                "R": "ROOK",
+                "N": "KNIGHT",
+                "B": "BISHOP",
+                "K": "KING",
+                "Q": "QUEEN"
+            }
+
+            const COLOUR_KEY = {
+                "p": "BLACK",
+                "r": "BLACK", 
+                "n": "BLACK", 
+                "b": "BLACK", 
+                "k": "BLACK", 
+                "q": "BLACK",
+                "P": "WHITE", 
+                "R": "WHITE", 
+                "N": "WHITE", 
+                "B": "WHITE",
+                "K": "WHITE", 
+                "Q": "WHITE"
+            }
+
+            class Vector {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                }
+
+                plus(modifier) {
+                    this.x += modifier;
+                    this.y += modifier;
+                }
+
+                translate(Vector) {
+                    this.x += Vector.x;
+                    this.y += Vector.y;
+                }
+            }
+
+            class State {
+                constructor(Board, PieceArray) {
+                    this.squares = Board;
+                    this.pieces = PieceArray;
+                }
+            }
+
+            class Piece {
+                constructor(Vector, type, colour) {
+                    this.coordinates = Vector;
+                    this.type = type;
+                    this.colour = colour;
+                    this.id = null;
+                }
+            }
+
+            class Board {
+                constructor(positionString) {
+                    this.squares = Array.from(
+                        {length: 8}, 
+                        (_, x) => Array.from(
+                            {length: 8},
+                            (_, y) => { 
+                                return new Piece(new Vector(x, y), null, null);
+                            }
+                        )
+                    );
+
+                    for (const [x, row] of positionString.split("/").entries()) {
+                        for (const [y, pieceType] of row.split("").entries()) {
+                            this.squares[x][y].colour = COLOUR_KEY[pieceType];
+                            this.squares[x][y].type = PIECE_KEY[pieceType.toUpperCase()];
+                        }
+                    }
+                }
+
+                spawn(coordinates, Piece) {
+                    let { x, y } = coordinates;
+                    this.squares[x][y] = Piece;
+                } 
+            }
+
+            function play(positionString) {
+                let position = positionString;
+                let board = new Board(position);
+                let state = new State(board);
+            }
+
+            play("rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR");
+        </script>
+    </body>
+</html>
